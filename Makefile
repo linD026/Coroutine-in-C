@@ -14,13 +14,14 @@ src/%.o: %.c
 
 
 all: static
+	cp src/coroutine.h coroutine.h
 
 static: $(OBJ)
 	ar crsv coroutine.a $(OBJ)
 
 clean:
 	rm -f src/*.o
-	rm -f coroutine.a
+	rm -f coroutine.a coroutine.h
 
 indent:
 	clang-format -i src/*[.ch]
