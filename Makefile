@@ -7,11 +7,20 @@ SRC:=src/runqueue.c
 SRC+=src/sched.c
 SRC+=src/coroutine.c
 
-all:
-	$(CC) -c $(SRC) $(CFLAG)
+OBJ=$(SRC:.c=.o)
+
+src/%.o: %.c
+	$(CC) -c $< $(CFLAG)
+
+
+all: static
+
+static: $(OBJ)
+	ar crsv coroutine.a $(OBJ)
 
 clean:
-	rm -f *.o
+	rm -f src/*.o
+	rm -f coroutine.a
 
 indent:
 	clang-format -i src/*[.ch]
