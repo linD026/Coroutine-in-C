@@ -6,8 +6,10 @@
 
 #include <stddef.h>
 #include <stdlib.h>
-#include "context.h"
 
+#ifndef __CONTEXT_H__
+#include "context.h"
+#endif
 
 // compiler memory barrier
 #define cr_cmb() asm volatile("" : : : "memory")

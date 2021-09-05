@@ -14,7 +14,8 @@ src/%.o: %.c
 
 
 all: static
-	cp src/coroutine.h coroutine.h
+	cat src/context.h >> coroutine.h
+	cat src/coroutine.h >> coroutine.h
 
 static: $(OBJ)
 	ar crsv coroutine.a $(OBJ)

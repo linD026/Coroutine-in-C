@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "../src/coroutine.h"
+#include "../coroutine.h"
 
 COROUTINE_DEFINE(job)
 {

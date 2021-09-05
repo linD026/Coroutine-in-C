@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <errno.h>
 
+#include "context.h"
 #include "coroutine.h"
 #include "coroutine_int.h"
 
