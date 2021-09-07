@@ -1,6 +1,7 @@
 #ifndef __COROUTINE_INT_H__
 #define __COROUTINE_INT_H__
 
+#include "rbtree.h"
 #include "context.h"
 
 typedef int (*job_t)(struct context *__context, void *args);
@@ -15,13 +16,23 @@ struct task_struct {
     job_t job;
     void *args;
     struct context context; /* defined at context.h */
+
+    /* default info */
+    struct {
+        struct rb_node node;
+        long sum_exec_runtime;
+        long exec_start;
+    };
 };
 
+#ifndef CONTAINER_OF
+#define CONTAINER_OF
 #define container_of(ptr, type, member)                                        \
     __extension__({                                                            \
         const __typeof__(((type *)0)->member) *__mptr = (ptr);                 \
         (type *)((char *)__mptr - offsetof(type, member));                     \
     })
+#endif
 
 #define task_of(__context) container_of(__context, struct task_struct, context)
 
@@ -48,12 +59,14 @@ struct cr {
     unsigned long size; /* number of the task in this scheduler */
     int crfd; /* coroutine fd number */
     int flag; /* Which type of scheduler, FIFO or CFS */
+    struct task_struct *current; /* the job currently working */
 
     // scheduler - chose by the flag
     struct rq rq;
-    struct task_struct *current;
+    struct rb_root root; /* default scheduler */
 
     /* sched operations */
+    int (*schedule)(struct cr *cr, job_t func, void *args);
     struct task_struct *(*pick_next_task)(struct cr *cr);
     int (*put_prev_task)(struct cr *cr, struct task_struct *prev);
     int (*job_to_proc)(struct cr *cr, struct task_struct *p); // return PID

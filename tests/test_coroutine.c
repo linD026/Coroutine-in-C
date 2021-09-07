@@ -25,7 +25,7 @@ int main(void)
 {
     int crfd, tfd[10];
 
-    crfd = coroutine_create(CR_FIFO);
+    crfd = coroutine_create(CR_DEFAULT);
 
     for (int i = 0;i < 10;i++) {
         tfd[i] = i;

@@ -217,20 +217,6 @@ static void __rb_delete_fixup(struct rb_root *root, struct rb_node *node)
     rb_set_black(node);
 }
 
-struct rb_node *rbtree_min(struct rb_root *root, struct rb_node *x)
-{
-    while (x->leftC != &root->nil)
-        x = x->leftC;
-    return x;
-}
-
-struct rb_node *rbtree_max(struct rb_root *root, struct rb_node *x)
-{
-    while (x->rightC != &root->nil)
-        x = x->rightC;
-    return x;
-}
-
 static inline void __rbtree_transplant(struct rb_root *root, struct rb_node *u,
                                        struct rb_node *v)
 {
@@ -258,7 +244,7 @@ void __rbtree_delete(struct rb_root *root, struct rb_node *node)
         x = node->leftC;
         __rbtree_transplant(root, node, node->leftC);
     } else {
-        y = rbtree_min(root, node->rightC);
+        y = __rbtree_min(root, node->rightC);
         yoc = rb_color(y);
         x = y->rightC;
         if (rb_parent(y) == node)

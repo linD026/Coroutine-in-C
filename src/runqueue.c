@@ -40,4 +40,3 @@ struct task_struct *rq_dequeue(struct rq *rq)
 
     return rev;
 }
-

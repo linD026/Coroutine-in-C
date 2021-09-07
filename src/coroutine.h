@@ -68,7 +68,6 @@ int coroutine_join(int crfd);
         __context->local_offset++;                                             \
     } while (0)
 
-
 /* The marco to define the variable of job function
  * It must happen before the cr_begin marco.
  */

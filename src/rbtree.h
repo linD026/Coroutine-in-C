@@ -88,15 +88,50 @@ struct rb_root {
         (root).cnt = 0;                                                        \
     } while (0)
 
-struct rb_node *rbtree_min(struct rb_root *root, struct rb_node *x);
-struct rb_node *rbtree_max(struct rb_root *root, struct rb_node *x);
+static inline struct rb_node *__rbtree_min(struct rb_root *root,
+                                           struct rb_node *x)
+{
+    while (x->leftC != &root->nil)
+        x = x->leftC;
+    return x;
+}
+
+#define rbtree_min(root)                                                       \
+    ({                                                                         \
+        struct rb_root *__r = (root);                                          \
+        struct rb_node *__tmp = __r->head;                                     \
+        if (__tmp == NULL || __tmp == &__r->nil)                               \
+            __tmp = NULL;                                                      \
+        else                                                                   \
+            __tmp = __rbtree_min(__r, __tmp);                                  \
+        __tmp;                                                                 \
+    })
+
+static inline struct rb_node *__rbtree_max(struct rb_root *root,
+                                           struct rb_node *x)
+{
+    while (x->rightC != &root->nil)
+        x = x->rightC;
+    return x;
+}
+
+#define rbtree_max(root)                                                       \
+    ({                                                                         \
+        struct rb_root *__r = (root);                                          \
+        struct rb_node *__tmp = __r->head;                                     \
+        if (__tmp == NULL || __tmp == &__r->nil)                               \
+            __tmp = NULL;                                                      \
+        else                                                                   \
+            __tmp = __rbtree_max(__r, __tmp);                                  \
+        __tmp;                                                                 \
+    })
 
 #define rbtree_next(r, n)                                                      \
     ({                                                                         \
         struct rb_root *__r = r;                                               \
         struct rb_node *__tmp, *__n = n;                                       \
         if (__n->rightC != NULL)                                               \
-            __tmp = rbtree_min(r, __n->rightC);                                \
+            __tmp = __rbtree_min(r, __n->rightC);                              \
         else {                                                                 \
             __tmp = rb_parent(n);                                              \
             while (__tmp != &__r->nil && __n == __tmp->rightC) {               \
@@ -112,7 +147,7 @@ struct rb_node *rbtree_max(struct rb_root *root, struct rb_node *x);
         struct rb_root *__r = r;                                               \
         struct rb_node *__tmp, *__n = n;                                       \
         if (__n->leftC != NULL)                                                \
-            __tmp = rbtree_max(r, __n->leftC);                                 \
+            __tmp = __rbtree_max(r, __n->leftC);                               \
         else {                                                                 \
             __tmp = rb_parent(n);                                              \
             while (__tmp != &__r->nil && __n == __tmp->leftC) {                \
@@ -145,8 +180,10 @@ struct rb_node *rbtree_search(struct rb_root *root, void *key,
 
 #define RBTREE_DELETE_DEFINE(name, rbnode) void name(struct rb_node *rbnode)
 
+// remove the node from rbtree
 void __rbtree_delete(struct rb_root *root, struct rb_node *node);
 
+// remove the node from rbtee and delete it
 int rbtree_delete(struct rb_root *root, void *key,
                   int (*cmp)(struct rb_node *, void *),
                   void (*deletefunc)(struct rb_node *));

@@ -35,7 +35,7 @@ int coroutine_add(int crfd, job_t func, void *args)
     if (crt.table[crfd] == NULL && func)
         return -EAGAIN;
 
-    return schedule(crt.table[crfd], func, args);
+    return crt.table[crfd]->schedule(crt.table[crfd], func, args);
 }
 
 /*
@@ -96,4 +96,3 @@ int __cr_to_proc(struct context *context, int flag)
 
     return cr->job_to_proc(cr, task);
 }
-
