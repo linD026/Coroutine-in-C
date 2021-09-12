@@ -2,6 +2,7 @@ BUILD_DIR = $(shell pwd)
 CC ?= gcc
 CFLAG:=-g 
 CFLAG+=-Wall
+CFLAG+=-O1
 
 SRC:=src/runqueue.c
 SRC+=src/sched.c
@@ -15,7 +16,7 @@ src/%.o: %.c
 
 
 all: static
-	cat src/context.h >> coroutine.h
+	cat src/context.h > coroutine.h
 	cat src/coroutine.h >> coroutine.h
 
 static: $(OBJ)

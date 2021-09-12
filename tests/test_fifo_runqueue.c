@@ -8,16 +8,16 @@ int main(void)
     struct task_struct *tmp;
 
     rq_init(&rq);
-    for (int i = 0;i < 10;i++) {
+    for (int i = 0; i < 10; i++) {
         task[i].tfd = i;
         printf("enqueue %d, return %d\n", i, rq_enqueue(&rq, &task[i]));
     }
 
-    for (int i = 0;i < 10;i++) {
+    for (int i = 0; i < 10; i++) {
         tmp = rq_dequeue(&rq);
         if (tmp)
             printf("dequeue %d\n", tmp->tfd);
-        else 
+        else
             printf("dequeue failed\n");
     }
 

@@ -57,10 +57,10 @@ int coroutine_join(int crfd);
  */
 #define COROUTINE_DEFINE(name) int name(struct context *__context, void *args)
 
-#define __VAR_DEFINE(type, name)                                               \
+#define __VAR_DEFINE(type, name, size)                                         \
     do {                                                                       \
         if (!__context->local[__context->local_offset]) {                      \
-            name = (type *)malloc(sizeof(type));                               \
+            name = (type *)malloc(sizeof(type) * size);                        \
             __context->local[__context->local_offset] = (void *)name;          \
             __context->local_size++;                                           \
         } else                                                                 \
@@ -73,30 +73,41 @@ int coroutine_join(int crfd);
  */
 #define VAR_DEFINE(type, name)                                                 \
     type *name;                                                                \
-    __VAR_DEFINE(type, name)
+    __VAR_DEFINE(type, name, 1)
 
 /* The marco to define the two variables of job function
  * It must happen before the cr_begin marco.
  */
 #define VAR_DEFINE2(type, n1, n2)                                              \
     type *n1, *n2;                                                             \
-    __VAR_DEFINE(type, n1);                                                    \
-    __VAR_DEFINE(type, n2)
+    __VAR_DEFINE(type, n1, 1);                                                 \
+    __VAR_DEFINE(type, n2, 1)
 
 /* The marco to define the three variables of job function
  * It must happen before the cr_begin marco.
  */
 #define VAR_DEFINE3(type, n1, n2, n3)                                          \
     type *n1, *n2, *n3;                                                        \
-    __VAR_DEFINE(type, n1);                                                    \
-    __VAR_DEFINE(type, n2);                                                    \
-    __VAR_DEFINE(type, n3)
+    __VAR_DEFINE(type, n1, 1);                                                 \
+    __VAR_DEFINE(type, n2, 1);                                                 \
+    __VAR_DEFINE(type, n3, 1)
+
+#define ARRAY_DEFINE(type, name, size)                                         \
+    type *name;                                                                \
+    __VAR_DEFINE(type, name, size)
 
 #define __VAR_RELEASE()                                                        \
     do {                                                                       \
         for (int __i = 0; __i < __context->local_size; __i++)                  \
             free(__context->local[__i]);                                       \
     } while (0)
+
+#define cr_assign(p, val)                                                      \
+    do {                                                                       \
+        *(p) = (val);                                                          \
+    } while (0)
+
+#define cr_dref(p) (*(p))
 
 // Return state
 enum {

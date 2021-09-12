@@ -33,6 +33,7 @@ Also, the variable define must happen before the `cr_begin` macro.
 COROUTINE_DEFINE(myjob)
 {
     VAR_DEFINE2(int, val1, val2);
+    ARRAY_DEFINE(int, arr, 20);
     cr_begin();
     cr_yield();
     cr_end();
@@ -51,7 +52,7 @@ int main(void)
   
   crfd = coroutine_create(CR_FIFO);
   tfd = coroutine_add(crfd, myjob, NULL);
-  coroutine_start();
+  coroutine_start(crfd);
   coroutine_join(crfd);
   
   return 0;
