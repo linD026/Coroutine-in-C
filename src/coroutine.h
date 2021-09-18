@@ -16,7 +16,7 @@
 
 /* The flags for deciding the scheduler of coroutine 
  */
-#define CR_DEFAULT 0x0000 /* CFS */
+#define CR_DEFAULT 0x0000
 #define CR_FIFO 0x0001
 
 /* Create the coroutine
@@ -102,7 +102,7 @@ int coroutine_join(int crfd);
             free(__context->local[__i]);                                       \
     } while (0)
 
-#define cr_assign(p, val)                                                      \
+#define cr_set(p, val)                                                         \
     do {                                                                       \
         *(p) = (val);                                                          \
     } while (0)

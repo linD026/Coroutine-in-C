@@ -7,15 +7,15 @@ COROUTINE_DEFINE(job)
     VAR_DEFINE3(double, k, l, m);
     ARRAY_DEFINE(int, arr, 20);
     cr_begin();
-    cr_assign(i, 1);
-    cr_assign(j, 2);
-    cr_assign(k, 2.2);
+    cr_set(i, 1);
+    cr_set(j, 2);
+    cr_set(k, 2.2);
     arr[4] = 2;
     printf("[@ job %d] %d %d\n", *(int *)args, cr_dref(i), cr_dref(j));
 
     cr_yield();
 
-    cr_assign(i, cr_dref(i) + 1);
+    cr_set(i, cr_dref(i) + 1);
     if (arr[4] == 2)
         printf("array success\n");
     printf("[# job %d] %d %d\n", *(int *)args, cr_dref(i), cr_dref(j));
