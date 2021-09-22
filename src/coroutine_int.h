@@ -69,7 +69,6 @@ struct cr {
     int (*schedule)(struct cr *cr, job_t func, void *args);
     struct task_struct *(*pick_next_task)(struct cr *cr);
     int (*put_prev_task)(struct cr *cr, struct task_struct *prev);
-    int (*job_to_proc)(struct cr *cr, struct task_struct *p); // return PID
 };
 
 struct cr_struct {

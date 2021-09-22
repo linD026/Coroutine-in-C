@@ -1,28 +1,14 @@
+#define _GNU_SOURCE
 #include <stdint.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <time.h>
+#include <sched.h>
 
 #include "rbtree.h"
 #include "context.h"
 #include "coroutine.h"
 #include "coroutine_int.h"
-
-/* The clone system call will call this function to let the
- * job being forked from the original struct cr.
- * Becarful about the context->blocked. If blocked set 1 is
- * int struct cr and all the coroutine operations are work;
- * if set 0, then the original job in the struct cr is blocked,
- * when the job scheduled is will immediately release the resource;
- * if set < 0, then it in this function.
- */
-static int clone_handler(void *args)
-{
-    struct task_struct *task = (struct task_struct *)args;
-    task->context.blocked = -1;
-    // TODO call the job
-    return 0;
-}
 
 /* FIFO scheduler
  */
@@ -59,22 +45,11 @@ static inline int fifo_put_prev_task(struct cr *cr, struct task_struct *prev)
     return rq_enqueue(&cr->rq, prev);
 }
 
-static inline int fifo_job_to_proc(struct cr *cr, struct task_struct *p)
-{
-    for (unsigned int i = cr->rq.in; i != cr->rq.out; i++)
-        if (cr->rq.r[i & cr->rq.mask] == p) {
-            p->context.blocked = 0;
-            // TODO establish the clone function
-            return 0;
-        }
-
-    return -EAGAIN;
-}
-
 /* Default scheduler
  */
 
-RBTREE_CMP_INSERT_DEFINE(rb_cmp_insert, _n1, _n2)
+// TODO if the key is same?
+static RBTREE_CMP_INSERT_DEFINE(rb_cmp_insert, _n1, _n2)
 {
     struct task_struct *n1 = container_of(_n1, struct task_struct, node);
     struct task_struct *n2 = container_of(_n2, struct task_struct, node);
@@ -84,7 +59,7 @@ RBTREE_CMP_INSERT_DEFINE(rb_cmp_insert, _n1, _n2)
         return 0;
 }
 
-RBTREE_CMP_SEARCH_DEFINE(rb_cmp_search, _n1, key)
+static RBTREE_CMP_SEARCH_DEFINE(rb_cmp_search, _n1, key)
 {
     struct task_struct *n1 = container_of(_n1, struct task_struct, node);
 
@@ -163,6 +138,5 @@ void sched_init(struct cr *cr)
         cr->schedule = fifo_schedule;
         cr->pick_next_task = fifo_pick_next_task;
         cr->put_prev_task = fifo_put_prev_task;
-        cr->job_to_proc = fifo_job_to_proc;
     }
 }

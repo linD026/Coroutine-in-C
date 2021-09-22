@@ -18,12 +18,12 @@ src/%.o: %.c
 all: static
 	cat src/context.h > coroutine.h
 	cat src/coroutine.h >> coroutine.h
+	rm -f src/*.o
 
 static: $(OBJ)
 	ar crsv coroutine.a $(OBJ)
 
 clean:
-	rm -f src/*.o
 	rm -f coroutine.a coroutine.h
 
 indent:

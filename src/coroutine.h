@@ -118,6 +118,7 @@ enum {
     CR_RETURN_JOB = 0x0004,
     CR_ENALBED = 0x0007,
     CR_DISALBLED = 0x0008,
+    CR_CLONE_EXIT = 0x0010,
 };
 
 #define ___cr_line(name, line) __cr_##name##line
@@ -169,6 +170,8 @@ enum {
     do {                                                                       \
     __cr_exit:                                                                 \
         __VAR_RELEASE();                                                       \
+        if (__context->blocked < 0)                                            \
+            return CR_CLONE_EXIT;                                              \
         return CR_EXIT;                                                        \
     } while (1)
 
@@ -187,6 +190,10 @@ enum {
 // If setting the context->blocked flag, the cr or job called by *_to_proc
 // will not activite in original process.
 int __cr_to_proc(struct context *__context, int flag);
-#define cr_to_proc(flag) __cr_to_proc(__context, flag)
+#define cr_to_proc(flag)                                                       \
+    do {                                                                       \
+        if (__cr_to_proc(__context, flag) == CR_EXIT)                          \
+            goto __cr_exit;                                                    \
+    } while (0)
 
 #endif /* __COROUTINE_H__ */

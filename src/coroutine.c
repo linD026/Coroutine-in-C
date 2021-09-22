@@ -3,6 +3,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <errno.h>
+#include <unistd.h>
 
 #include "context.h"
 #include "coroutine.h"
@@ -60,6 +61,15 @@ int coroutine_start(int crfd)
         status = cr->current->job(&(cr->current->context), cr->current->args);
 
         switch (status) {
+        case CR_CLONE_EXIT:
+            // TODO free the resource
+            free(cr->current);
+            while (cr->current = cr->pick_next_task(cr)) {
+                if (!cr->current)
+                    goto done;
+                free(cr->current);
+            }
+            // Will not go to here.
         case CR_WAIT:
             break;
         case CR_YIELD:
@@ -88,11 +98,30 @@ int coroutine_join(int crfd)
     return 0;
 }
 
-// TODO, see coroutine.h comments
+/* The clone system call will call this function to let the
+ * job being forked from the original struct cr.
+ * Becarful about the context->blocked. If blocked set 1 is
+ * int struct cr and all the coroutine operations are work;
+ * if set 0, then the original job in the struct cr is blocked,
+ * when the job scheduled is will immediately release the resource;
+ * if set < 0, then it in this function.
+ */
 int __cr_to_proc(struct context *context, int flag)
 {
     struct task_struct *task = task_of(context);
     struct cr *cr = task->cr;
 
-    return cr->job_to_proc(cr, task);
+    task->context.blocked = 0;
+    switch (fork()) {
+    // fail
+    case -1:
+        return -EAGAIN;
+    // child
+    case 0:
+        task->context.blocked = -1;
+        return CR_CLONE_EXIT;
+    // parent
+    default:
+        return CR_EXIT;
+    }
 }
