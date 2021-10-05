@@ -35,7 +35,11 @@ COROUTINE_DEFINE(myjob)
     VAR_DEFINE2(int, val1, val2);
     ARRAY_DEFINE(int, arr, 20);
     cr_begin();
+    cr_set(val1, 2 /* value */);
+    cr_set(arr, 2 /* value */, 3 /* index */);
     cr_yield();
+    int temp = cr_dref(val1);
+    temp = cr_dref(arr, 3 /* index */);
     cr_end();
 }
 ```

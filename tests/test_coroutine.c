@@ -10,13 +10,14 @@ COROUTINE_DEFINE(job)
     cr_set(i, 1);
     cr_set(j, 2);
     cr_set(k, 2.2);
-    arr[4] = 2;
+    
+    cr_set(arr, 2, 4 /* index */);
     printf("[@ job %d] %d %d\n", *(int *)args, cr_dref(i), cr_dref(j));
 
     cr_yield();
 
     cr_set(i, cr_dref(i) + 1);
-    if (arr[4] == 2)
+    if (cr_dref(arr, 4 /* index */) == 2)
         printf("array success\n");
     printf("[# job %d] %d %d\n", *(int *)args, cr_dref(i), cr_dref(j));
     if (cr_dref(k) == 2.2)

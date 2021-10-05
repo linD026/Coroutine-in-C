@@ -102,12 +102,27 @@ int coroutine_join(int crfd);
             free(__context->local[__i]);                                       \
     } while (0)
 
-#define cr_set(p, val)                                                         \
+static inline int ____args_count(int cnt, int index, ...)
+{
+	return cnt ? index : 0;
+}
+
+#define ___args_count(...) (sizeof((int[]){ 0, __VA_ARGS__ }) / sizeof(int) - 1)
+
+#define __args_count(...)                                                      \
+    ____args_count(___args_count(__VA_ARGS__), ##__VA_ARGS__, 0)
+
+#define cr_set(p, val, ...)                                                    \
     do {                                                                       \
-        *(p) = (val);                                                          \
+        int __args_cnt = __args_count(__VA_ARGS__);                            \
+        p[__args_cnt] = (val);                                                 \
     } while (0)
 
-#define cr_dref(p) (*(p))
+#define cr_dref(p, ...)                                                        \
+    ({                                                                         \
+        int __args_cnt = __args_count(__VA_ARGS__);                            \
+        p[__args_cnt];                                                         \
+    })
 
 // Return state
 enum {
