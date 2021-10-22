@@ -199,9 +199,6 @@ enum {
 #define cr_lock()
 #define cr_unlock()
 
-// TODO implement following function
-// after all the basic functions established.
-
 // If setting the context->blocked flag, the cr or job called by *_to_proc
 // will not activite in original process.
 int __cr_to_proc(struct context *__context, int flag);

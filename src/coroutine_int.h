@@ -77,7 +77,5 @@ struct cr_struct {
 };
 
 void sched_init(struct cr *cr);
-// call by coroutine_add
-int schedule(struct cr *cr, job_t func, void *args);
 
 #endif /* __COROUTINE_INT_H__ */

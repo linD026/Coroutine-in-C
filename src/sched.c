@@ -123,7 +123,6 @@ static inline int default_put_prev_task(struct cr *cr, struct task_struct *prev)
     return 0;
 }
 
-// TODO default scheduler
 void sched_init(struct cr *cr)
 {
     switch (cr->flag) {
