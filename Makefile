@@ -25,6 +25,7 @@ static: $(OBJ)
 
 clean:
 	rm -f coroutine.a coroutine.h
+	make -C tests clean
 
 indent:
 	clang-format -i src/*[.ch]
