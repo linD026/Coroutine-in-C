@@ -48,15 +48,17 @@ static inline int fifo_put_prev_task(struct cr *cr, struct task_struct *prev)
 /* Default scheduler
  */
 
-// TODO if the key is same?
 static RBTREE_CMP_INSERT_DEFINE(rb_cmp_insert, _n1, _n2)
 {
     struct task_struct *n1 = container_of(_n1, struct task_struct, node);
     struct task_struct *n2 = container_of(_n2, struct task_struct, node);
     if (n1->sum_exec_runtime < n2->sum_exec_runtime)
         return 1;
-    else
+    else {
+        if (n1->sum_exec_runtime == n2->sum_exec_runtime)
+            n1->sum_exec_runtime++;
         return 0;
+    }
 }
 
 static RBTREE_CMP_SEARCH_DEFINE(rb_cmp_search, _n1, key)
