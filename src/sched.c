@@ -117,7 +117,7 @@ static inline int default_put_prev_task(struct cr *cr, struct task_struct *prev)
     struct timespec end;
 
     clock_gettime(CLOCK_MONOTONIC, &end);
-    prev->sum_exec_runtime += time_diff(prev->exec_start, end.tv_sec);
+    prev->sum_exec_runtime += time_diff(prev->exec_start, end.tv_nsec);
     rbtree_insert(&cr->root, &prev->node, rb_cmp_insert);
 
     return 0;

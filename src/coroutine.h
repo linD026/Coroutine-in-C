@@ -188,7 +188,7 @@ enum {
         if (__context->blocked < 0)                                            \
             return CR_CLONE_EXIT;                                              \
         return CR_EXIT;                                                        \
-    } while (1)
+    } while (0)
 
 // TODO
 #define cr_enter(tfd)
