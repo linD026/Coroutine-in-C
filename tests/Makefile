@@ -10,6 +10,9 @@ LIB = ../coroutine.a
 check:
 	$(CC) -o test test_coroutine.c $(LIB)  $(CFLAG)
 
+clone:
+	$(CC) -o test test_clone.c $(LIB) $(CFLAG)
+
 indent:
 	clang-format -i *.[ch]	
 

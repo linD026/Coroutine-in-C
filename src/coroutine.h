@@ -22,7 +22,8 @@
 /* Create the coroutine
  * - flag: The bitmask for modifying the behavior of coroutine
  * 
- * The return value is the fd number of coroutine.i
+ * The flag can be setted by CR_DEFAULT, CR_FIFO for the scheduler decision.
+ * The return value is the fd number of coroutine.
  * When the return value is < 0, it failed.
  */
 int coroutine_create(int flag);

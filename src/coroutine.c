@@ -63,7 +63,7 @@ int coroutine_start(int crfd)
         switch (status) {
         case CR_CLONE_EXIT:
             free(cr->current);
-            while (cr->current = cr->pick_next_task(cr)) {
+            while ((cr->current = cr->pick_next_task(cr))) {
                 if (!cr->current)
                     goto done;
                 free(cr->current);
