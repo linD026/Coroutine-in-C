@@ -73,7 +73,7 @@ static RBTREE_CMP_SEARCH_DEFINE(rb_cmp_search, _n1, key)
         return RB_LEFT;
 }
 
-#define time_diff(start, end)                                                  \
+#define time_diff(start, end) \
     (end - start < 0 ? (1000000000 + end - start) : (end - start))
 
 static inline int default_schedule(struct cr *cr, job_t func, void *args)
