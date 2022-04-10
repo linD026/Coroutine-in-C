@@ -28,4 +28,4 @@ clean:
 	make -C tests clean
 
 indent:
-	clang-format -i src/*[.ch]
+	clang-format -i src/*.[ch]
