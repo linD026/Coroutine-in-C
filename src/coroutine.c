@@ -75,6 +75,8 @@ int coroutine_start(int crfd)
             while ((cr->current = cr->pick_next_task(cr))) {
                 if (!cr->current)
                     goto done;
+                for (int i = 0; i < cr->current->context.local_size; i++)
+                    free(cr->current->context.local[i]);
                 free(cr->current);
             }
         case CR_WAIT:
@@ -124,7 +126,7 @@ int __cr_to_proc(struct context *context, int flags)
     case -1: /* failed */
         return -EAGAIN;
     case 0: /* child */
-        /* TODO: release all the resources */
+        /* All the tasks will release after forked job finish. */
         task->context.blocked = -1;
         return CR_CLONE_EXIT;
     default: /* parent */
