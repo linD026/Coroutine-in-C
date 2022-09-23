@@ -31,10 +31,12 @@ int main(void)
     int crfd, tfd[10];
 
     crfd = coroutine_create(CR_DEFAULT);
+    if (crfd < 0)
+        return crfd;
 
     for (int i = 0; i < 10; i++) {
         tfd[i] = i;
-        printf("[%d tfd] %d added, %d\n", coroutine_add(crfd, job, &tfd[i]), i,
+        printf("[tfd %d] %d added, %d\n", coroutine_add(crfd, job, &tfd[i]), i,
                tfd[i]);
     }
 
