@@ -23,8 +23,9 @@
 #define CR_DEFAULT 0x0000
 #define CR_FIFO 0x0001
 
-/* Create the coroutine
- * - flag: The bitmask for modifying the behavior of coroutine
+/**
+ * coroutine_create - Create the coroutine
+ * @flag: The bitmask for modifying the behavior of coroutine
  * 
  * The flag can be setted by CR_DEFAULT, CR_FIFO for the scheduler decision.
  * The return value is the fd number of coroutine.
@@ -32,18 +33,20 @@
  */
 int coroutine_create(int flag);
 
-/* Start working the job which added in the coroutine
- * - crfd: The fd of the coroutine want to run.
+/**
+ * coroutine_start - Start working the job which added in the coroutine
+ * @crfd: The fd of the coroutine want to run.
  *
  * This is blocking function.
  * Return 0 if all the jobs are done.
  */
 int coroutine_start(int crfd);
 
-/* Add the task into the coroutine
- * - crfd: The fd of the coroutine you want to add.
- * - func: The function declared by COROUTINE_DEFINE which want to add in.
- * - args: The arguments are passed into the func.
+/**
+ * coroutine_add - Add the task into the coroutine
+ * @crfd: The fd of the coroutine you want to add.
+ * @func: The function declared by COROUTINE_DEFINE which want to add in.
+ * @args: The arguments are passed into the func.
  *
  * Return value is the fd number of the job.
  * When the return value is < 0, it failed.
@@ -51,15 +54,15 @@ int coroutine_start(int crfd);
 int coroutine_add(int crfd, int (*func)(struct context *__context, void *args),
                   void *args);
 
-/* Join with a terminated coroutine
- * - crfd: The fd of the terminated coroutine 
+/**
+ * coroutine_join - Join with a terminated coroutine
+ * @crfd: The fd of the terminated coroutine 
  * 
  * Return 0 if success.
  */
 int coroutine_join(int crfd);
 
-/* The prototype of the job (function).
- */
+/* The prototype of the job */
 #define COROUTINE_DEFINE(name) int name(struct context *__context, void *args)
 
 #define __VAR_DEFINE(type, name, size)                                \
@@ -73,14 +76,16 @@ int coroutine_join(int crfd);
         __context->local_offset++;                                    \
     } while (0)
 
-/* The marco to define the variable of job function
+/*
+ * The marco to define the variable of job function
  * It must happen before the cr_begin marco.
  */
 #define VAR_DEFINE(type, name) \
     type *name;                \
     __VAR_DEFINE(type, name, 1)
 
-/* The marco to define the two variables of job function
+/*
+ * The marco to define the two variables of job function
  * It must happen before the cr_begin marco.
  */
 #define VAR_DEFINE2(type, n1, n2) \
@@ -88,7 +93,8 @@ int coroutine_join(int crfd);
     __VAR_DEFINE(type, n1, 1);    \
     __VAR_DEFINE(type, n2, 1)
 
-/* The marco to define the three variables of job function
+/*
+ * The marco to define the three variables of job function
  * It must happen before the cr_begin marco.
  */
 #define VAR_DEFINE3(type, n1, n2, n3) \
@@ -129,7 +135,7 @@ static inline int ____args_count(int cnt, int index, ...)
         p[__args_cnt];                              \
     })
 
-// Return state
+/* Return state */
 enum {
     CR_INIT = 0x0000,
     CR_EXIT = ~0x0000,
@@ -150,9 +156,11 @@ enum {
                 : __context->label = &&__cr_line(state); \
     } while (0)
 
-/* Initailizing the job function of coroutine
+/*
+ * Initailizing the job function of coroutine
  *
- * The variable defined by CR_DEFINEn() marco need to be declared before this marco
+ * The variable, which defined by CR_DEFINEn() marco, need to be
+ * declared before this marco.
  */
 #define cr_begin()                   \
     do {                             \
@@ -200,15 +208,17 @@ enum {
 #define cr_enter(tfd)
 
 // TODO
-/* semaphore (lock) API
+/* 
+ * semaphore (lock) API
  */
 typedef struct cr_lock {
     volatile unsigned int count;
 } cr_lock_t;
+
 #define cr_lock(p)                   \
     do {                             \
         while (!((p)->count & 0x01)) \
-            ;                        \
+            cr_yield();              \
         (p)->count++;                \
     } while (0)
 #define cr_unlock(p)  \
@@ -216,9 +226,11 @@ typedef struct cr_lock {
         (p)->count--; \
     } while (0)
 
-// If setting the context->blocked flag, the cr or job called by *_to_proc
-// will not activite in original process.
+/* If setting the context->blocked flag, the cr or job called by *_to_proc
+ *  will not activite in original process.
+ */
 int __cr_to_proc(struct context *__context, int flag);
+
 #define cr_to_proc(flag)                              \
     do {                                              \
         if (__cr_to_proc(__context, flag) == CR_EXIT) \
