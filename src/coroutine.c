@@ -13,19 +13,25 @@ static struct cr_struct crt = { 0 };
 
 int coroutine_create(int flag)
 {
-    int ret = -ENOMEM;
+    int ret;
 
     if (!(flag & CR_SCHED_MASK))
         return -EFAULT;
 
-    if (!crt.table[crt.size]) {
-        crt.table[crt.size] = calloc(1, sizeof(struct cr));
-        if (!crt.table[crt.size])
-            return ret;
-        crt.table[crt.size]->crfd = crt.size;
-        crt.table[crt.size]->flag = flag; // set the sched flag
-        sched_init(crt.table[crt.size]);
-        ret = crt.size++;
+    if (crt.size >= MAX_CR_TABLE_SIZE)
+        return -ENOMEM;
+
+    for (int i = 0; i < MAX_CR_TABLE_SIZE; i++) {
+        if (!crt.table[i]) {
+            crt.table[i] = calloc(1, sizeof(struct cr));
+            if (!crt.table[i])
+                return ret;
+            crt.table[i]->crfd = crt.size;
+            crt.table[i]->flag = flag; // set the sched flag
+            sched_init(crt.table[i]);
+            crt.size++;
+            ret = i;
+        }
     }
 
     return ret;
@@ -37,7 +43,7 @@ int coroutine_create(int flag)
 int coroutine_add(int crfd, job_t func, void *args)
 {
     if (crt.table[crfd] == NULL && func)
-        return -EAGAIN;
+        return -EFAULT;
 
     return crt.table[crfd]->schedule(crt.table[crfd], func, args);
 }
@@ -53,7 +59,7 @@ int coroutine_start(int crfd)
     int status;
 
     if (!crt.table[crfd])
-        return -EAGAIN;
+        return -EFAULT;
     cr = crt.table[crfd];
 
     do {
@@ -92,10 +98,11 @@ done:
 int coroutine_join(int crfd)
 {
     if (!crt.table[crfd])
-        return -EAGAIN;
+        return -EFAULT;
 
     free(crt.table[crfd]);
-    memmove(&crt.table[crfd], &crt.table[--crt.size], sizeof(void *));
+    crt.table[crfd] = NULL;
+    crt.size--;
     return 0;
 }
 
