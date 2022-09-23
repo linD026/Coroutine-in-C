@@ -8,8 +8,8 @@
 
 struct rb_node {
     unsigned long parent_color;
-    struct rb_node *leftC;
-    struct rb_node *rightC;
+    struct rb_node *left_child;
+    struct rb_node *right_child;
 } __attribute__((aligned(sizeof(long))));
 
 #elif __STDC_VERSION__ >= 201112L
@@ -18,13 +18,13 @@ struct rb_node {
 
 struct rb_node {
     alignas(sizeof(long)) unsigned long parent_color;
-    struct rb_node *leftC;
-    struct rb_node *rightC;
+    struct rb_node *left_child;
+    struct rb_node *right_child;
 };
 
 #else
 
-static_assert(0, "Oops! Version is not support.");
+static_assert(0, "Oops! Version not support.");
 
 #endif
 
@@ -34,8 +34,7 @@ struct rb_root {
     struct rb_node nil;
 };
 
-#ifndef CONTAINER_OF
-#define CONTAINER_OF
+#ifndef container_of
 #define container_of(ptr, type, member)                        \
     __extension__({                                            \
         const __typeof__(((type *)0)->member) *__mptr = (ptr); \
@@ -83,16 +82,16 @@ struct rb_root {
     do {                                                \
         (root).head = &((root).nil);                    \
         (root).nil.parent_color = (unsigned long)BLACK; \
-        (root).nil.leftC = NULL;                        \
-        (root).nil.rightC = NULL;                       \
+        (root).nil.left_child = NULL;                   \
+        (root).nil.right_child = NULL;                  \
         (root).cnt = 0;                                 \
     } while (0)
 
 static inline struct rb_node *__rbtree_min(struct rb_root *root,
                                            struct rb_node *x)
 {
-    while (x->leftC != &root->nil)
-        x = x->leftC;
+    while (x->left_child != &root->nil)
+        x = x->left_child;
     return x;
 }
 
@@ -110,8 +109,8 @@ static inline struct rb_node *__rbtree_min(struct rb_root *root,
 static inline struct rb_node *__rbtree_max(struct rb_root *root,
                                            struct rb_node *x)
 {
-    while (x->rightC != &root->nil)
-        x = x->rightC;
+    while (x->right_child != &root->nil)
+        x = x->right_child;
     return x;
 }
 
@@ -126,36 +125,36 @@ static inline struct rb_node *__rbtree_max(struct rb_root *root,
         __tmp;                                   \
     })
 
-#define rbtree_next(r, n)                                        \
-    ({                                                           \
-        struct rb_root *__r = r;                                 \
-        struct rb_node *__tmp, *__n = n;                         \
-        if (__n->rightC != NULL)                                 \
-            __tmp = __rbtree_min(r, __n->rightC);                \
-        else {                                                   \
-            __tmp = rb_parent(n);                                \
-            while (__tmp != &__r->nil && __n == __tmp->rightC) { \
-                __n = __tmp;                                     \
-                __tmp = rb_parent(__tmp);                        \
-            }                                                    \
-        }                                                        \
-        __tmp;                                                   \
+#define rbtree_next(r, n)                                             \
+    ({                                                                \
+        struct rb_root *__r = r;                                      \
+        struct rb_node *__tmp, *__n = n;                              \
+        if (__n->right_child != NULL)                                 \
+            __tmp = __rbtree_min(r, __n->right_child);                \
+        else {                                                        \
+            __tmp = rb_parent(n);                                     \
+            while (__tmp != &__r->nil && __n == __tmp->right_child) { \
+                __n = __tmp;                                          \
+                __tmp = rb_parent(__tmp);                             \
+            }                                                         \
+        }                                                             \
+        __tmp;                                                        \
     })
 
-#define rbtree_prev(r, n)                                       \
-    ({                                                          \
-        struct rb_root *__r = r;                                \
-        struct rb_node *__tmp, *__n = n;                        \
-        if (__n->leftC != NULL)                                 \
-            __tmp = __rbtree_max(r, __n->leftC);                \
-        else {                                                  \
-            __tmp = rb_parent(n);                               \
-            while (__tmp != &__r->nil && __n == __tmp->leftC) { \
-                __n = __tmp;                                    \
-                __tmp = rb_parent(__tmp);                       \
-            }                                                   \
-        }                                                       \
-        __tmp;                                                  \
+#define rbtree_prev(r, n)                                            \
+    ({                                                               \
+        struct rb_root *__r = r;                                     \
+        struct rb_node *__tmp, *__n = n;                             \
+        if (__n->left_child != NULL)                                 \
+            __tmp = __rbtree_max(r, __n->left_child);                \
+        else {                                                       \
+            __tmp = rb_parent(n);                                    \
+            while (__tmp != &__r->nil && __n == __tmp->left_child) { \
+                __n = __tmp;                                         \
+                __tmp = rb_parent(__tmp);                            \
+            }                                                        \
+        }                                                            \
+        __tmp;                                                       \
     })
 
 /*
