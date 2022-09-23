@@ -57,10 +57,10 @@ struct task_struct *rq_dequeue(struct rq *rq);
 struct cr {
     unsigned long size; /* number of the task in this scheduler */
     int crfd; /* coroutine fd number */
-    int flag; /* Which type of scheduler, FIFO or CFS */
+    int flags; /* Which type of scheduler, FIFO or CFS */
     struct task_struct *current; /* the job currently working */
 
-    /* scheduler - chose by the flag */
+    /* scheduler - chose by the flags */
     struct rq rq; /* FIFO */
     struct rb_root root; /* Default */
 

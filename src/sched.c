@@ -126,7 +126,7 @@ static inline int default_put_prev_task(struct cr *cr, struct task_struct *prev)
 
 void sched_init(struct cr *cr)
 {
-    switch (cr->flag) {
+    switch (cr->flags) {
     case CR_DEFAULT:
         RB_ROOT_INIT(cr->root);
         cr->schedule = default_schedule;

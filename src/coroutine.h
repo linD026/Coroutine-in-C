@@ -27,13 +27,13 @@
 
 /**
  * coroutine_create - Create the coroutine
- * @flag: The bitmask for modifying the behavior of coroutine
+ * @flags: The bitmask for modifying the behavior of coroutine
  * 
- * The flag can be setted by CR_DEFAULT, CR_FIFO for the scheduler decision.
+ * The flags can be setted by CR_DEFAULT, CR_FIFO for the scheduler decision.
  * The return value is the fd number of coroutine.
  * When the return value is < 0, it failed.
  */
-int coroutine_create(int flag);
+int coroutine_create(int flags);
 
 /**
  * coroutine_start - Start working the job which added in the coroutine
@@ -231,15 +231,15 @@ typedef struct cr_lock {
         (p)->count--; \
     } while (0)
 
-/* If setting the context->blocked flag, the cr or job called by *_to_proc
+/* If setting the context->blocked flags, the cr or job called by *_to_proc
  *  will not activite in original process.
  */
-int __cr_to_proc(struct context *__context, int flag);
+int __cr_to_proc(struct context *__context, int flags);
 
-#define cr_to_proc(flag)                              \
-    do {                                              \
-        if (__cr_to_proc(__context, flag) == CR_EXIT) \
-            goto __cr_exit;                           \
+#define cr_to_proc(flags)                              \
+    do {                                               \
+        if (__cr_to_proc(__context, flags) == CR_EXIT) \
+            goto __cr_exit;                            \
     } while (0)
 
 #endif /* __COROUTINE_H__ */

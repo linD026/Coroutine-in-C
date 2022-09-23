@@ -11,11 +11,11 @@
 
 static struct cr_struct crt = { 0 };
 
-int coroutine_create(int flag)
+int coroutine_create(int flags)
 {
     int ret;
 
-    if (!(flag & CR_SCHED_MASK))
+    if (!(flags & CR_SCHED_MASK))
         return -EFAULT;
 
     if (crt.size >= MAX_CR_TABLE_SIZE)
@@ -27,7 +27,7 @@ int coroutine_create(int flag)
             if (!crt.table[i])
                 return ret;
             crt.table[i]->crfd = crt.size;
-            crt.table[i]->flag = flag; // set the sched flag
+            crt.table[i]->flags = flags;
             sched_init(crt.table[i]);
             crt.size++;
             ret = i;
@@ -114,7 +114,7 @@ int coroutine_join(int crfd)
  * when the job scheduled is will immediately release the resource;
  * if set < 0, then it in this function.
  */
-int __cr_to_proc(struct context *context, int flag)
+int __cr_to_proc(struct context *context, int flags)
 {
     struct task_struct *task = task_of(context);
     struct cr *cr = task->cr;
