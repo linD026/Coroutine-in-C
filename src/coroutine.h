@@ -23,6 +23,8 @@
 #define CR_DEFAULT 0x0000
 #define CR_FIFO 0x0001
 
+#define CR_SCHED_MASK (CR_DEFAULT | CR_FIFO)
+
 /**
  * coroutine_create - Create the coroutine
  * @flag: The bitmask for modifying the behavior of coroutine

@@ -15,10 +15,13 @@ int coroutine_create(int flag)
 {
     int ret = -ENOMEM;
 
+    if (!(flag & CR_SCHED_MASK))
+        return -EFAULT;
+
     if (!crt.table[crt.size]) {
         crt.table[crt.size] = calloc(1, sizeof(struct cr));
         if (!crt.table[crt.size])
-            return -ENOMEM;
+            return ret;
         crt.table[crt.size]->crfd = crt.size;
         crt.table[crt.size]->flag = flag; // set the sched flag
         sched_init(crt.table[crt.size]);
@@ -68,7 +71,6 @@ int coroutine_start(int crfd)
                     goto done;
                 free(cr->current);
             }
-            // Will not go to here.
         case CR_WAIT:
             break;
         case CR_YIELD:
@@ -112,15 +114,13 @@ int __cr_to_proc(struct context *context, int flag)
 
     task->context.blocked = 0;
     switch (fork()) {
-    // fail
-    case -1:
+    case -1: /* failed */
         return -EAGAIN;
-    // child
-    case 0:
+    case 0: /* child */
+        /* TODO: release all the resources */
         task->context.blocked = -1;
         return CR_CLONE_EXIT;
-    // parent
-    default:
+    default: /* parent */
         return CR_EXIT;
     }
 }

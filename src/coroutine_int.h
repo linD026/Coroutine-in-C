@@ -25,8 +25,7 @@ struct task_struct {
     };
 };
 
-#ifndef CONTAINER_OF
-#define CONTAINER_OF
+#ifndef container_of
 #define container_of(ptr, type, member)                        \
     __extension__({                                            \
         const __typeof__(((type *)0)->member) *__mptr = (ptr); \
@@ -61,9 +60,9 @@ struct cr {
     int flag; /* Which type of scheduler, FIFO or CFS */
     struct task_struct *current; /* the job currently working */
 
-    // scheduler - chose by the flag
-    struct rq rq;
-    struct rb_root root; /* default scheduler */
+    /* scheduler - chose by the flag */
+    struct rq rq; /* FIFO */
+    struct rb_root root; /* Default */
 
     /* sched operations */
     int (*schedule)(struct cr *cr, job_t func, void *args);
