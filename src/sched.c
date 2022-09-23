@@ -10,8 +10,8 @@
 #include "coroutine.h"
 #include "coroutine_int.h"
 
-/* FIFO scheduler
- */
+/* FIFO scheduler */
+
 static inline int fifo_schedule(struct cr *cr, job_t func, void *args)
 {
     struct task_struct *new_task;
@@ -45,8 +45,7 @@ static inline int fifo_put_prev_task(struct cr *cr, struct task_struct *prev)
     return rq_enqueue(&cr->rq, prev);
 }
 
-/* Default scheduler
- */
+/* Default scheduler */
 
 static RBTREE_CMP_INSERT_DEFINE(rb_cmp_insert, _n1, _n2)
 {
