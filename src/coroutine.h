@@ -217,12 +217,15 @@ typedef struct cr_lock {
     volatile unsigned int count;
 } cr_lock_t;
 
+#define LOCK_DEFINE
+
 #define cr_lock(p)                   \
     do {                             \
         while (!((p)->count & 0x01)) \
             cr_yield();              \
         (p)->count++;                \
     } while (0)
+
 #define cr_unlock(p)  \
     do {              \
         (p)->count--; \
