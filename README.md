@@ -1,7 +1,7 @@
 # Coroutine in C
 
 This project is the Unix style of coroutine mechanism in C language.
-It use the file descriptor number to control the coroutine system and the job function.
+It uses the file descriptor number to control the coroutine system and the job function.
 
 Building
 ---
@@ -12,7 +12,7 @@ $ make
 
 How to use
 ---
-In your project, include the `coroutine.h` header for using the API:
+In your project, include the `coroutine.h` header for the API:
 ```cpp
 #include "coroutine.h"
 ```
@@ -25,9 +25,9 @@ $ gcc -o main main.c coroutine.a -g
 The routine
 ---
 First of all, define the job function you want to work.
-The variable used in the job function needs to be declared by `VAR_DEFINEn()` macro,
-which `n` is the number of the variable you want to declare.
-Also, the variable define must happen before the `cr_begin` macro.
+The variable is used in the job function which needs to be declared by `VAR_DEFINEn()` macro,
+The `n` is the number of the variable you want to declare.
+Also, the variable defines must happen before the `cr_begin` macro.
 
 ```cpp
 COROUTINE_DEFINE(myjob)
@@ -44,7 +44,7 @@ COROUTINE_DEFINE(myjob)
 }
 ```
 
-Second, create the coroutine by `coroutine_create()` function,
+Second, create the coroutine with `coroutine_create()` function,
 it will return the fd number of the coroutine you created.
 Then, add the job function into the coroutine by the `coroutine_add` function and start working.
 At least, use the `coroutine_join` to join with the terminated coroutine.

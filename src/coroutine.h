@@ -31,7 +31,7 @@
  * 
  * The flags can be setted by CR_DEFAULT, CR_FIFO for the scheduler decision.
  * The return value is the fd number of coroutine.
- * When the return value is < 0, it failed.
+ * When the return value is < 0, its failed.
  */
 int coroutine_create(int flags);
 
@@ -51,7 +51,7 @@ int coroutine_start(int crfd);
  * @args: The arguments are passed into the func.
  *
  * Return value is the fd number of the job.
- * When the return value is < 0, it failed.
+ * When the return value is < 0, its failed.
  */
 int coroutine_add(int crfd, int (*func)(struct context *__context, void *args),
                   void *args);
@@ -80,7 +80,7 @@ int coroutine_join(int crfd);
 
 /*
  * The marco to define the variable of job function
- * It must happen before the cr_begin marco.
+ * It must happens before the cr_begin marco.
  */
 #define VAR_DEFINE(type, name) \
     type *name;                \
@@ -88,7 +88,7 @@ int coroutine_join(int crfd);
 
 /*
  * The marco to define the two variables of job function
- * It must happen before the cr_begin marco.
+ * It must happens before the cr_begin marco.
  */
 #define VAR_DEFINE2(type, n1, n2) \
     type *n1, *n2;                \
@@ -97,7 +97,7 @@ int coroutine_join(int crfd);
 
 /*
  * The marco to define the three variables of job function
- * It must happen before the cr_begin marco.
+ * It must happens before the cr_begin marco.
  */
 #define VAR_DEFINE3(type, n1, n2, n3) \
     type *n1, *n2, *n3;               \
@@ -231,7 +231,7 @@ typedef struct cr_lock {
         (p)->count--; \
     } while (0)
 
-/* If setting the context->blocked flags, the cr or job called by *_to_proc
+/* If set the context->blocked flags, the cr or job called by *_to_proc
  *  will not activite in original process.
  */
 int __cr_to_proc(struct context *__context, int flags);
