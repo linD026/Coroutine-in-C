@@ -13,7 +13,7 @@ static struct cr_struct crt = { 0 };
 
 int coroutine_create(int flags)
 {
-    int ret;
+    int ret = -ENOMEM;
 
     if (!(flags & CR_SCHED_MASK))
         return -EFAULT;
@@ -26,11 +26,12 @@ int coroutine_create(int flags)
             crt.table[i] = calloc(1, sizeof(struct cr));
             if (!crt.table[i])
                 return ret;
-            crt.table[i]->crfd = crt.size;
+            crt.table[i]->crfd = i;
             crt.table[i]->flags = flags;
             sched_init(crt.table[i]);
             crt.size++;
             ret = i;
+            break;
         }
     }
 
@@ -42,7 +43,7 @@ int coroutine_create(int flags)
  */
 int coroutine_add(int crfd, job_t func, void *args)
 {
-    if (crt.table[crfd] == NULL && func)
+    if (!crt.table[crfd] && func)
         return -EFAULT;
 
     return crt.table[crfd]->schedule(crt.table[crfd], func, args);
