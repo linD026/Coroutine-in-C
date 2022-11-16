@@ -11,9 +11,8 @@ SRC+=src/rbtree.c
 
 OBJ=$(SRC:.c=.o)
 
-src/%.o: %.c
-	$(CC) -c $< $(CFLAG)
-
+src/%.o: src/%.c
+	$(CC) -c $< $(CFLAG) -o $@
 
 all: static
 	cat src/context.h > coroutine.h
